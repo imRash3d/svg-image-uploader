@@ -13,6 +13,7 @@ const StartServer = async () => {
     const server = require("http").createServer(app);
 
     app.use('/api/logs', express.static('app.log'));
+    app.use('/api/erros', express.static('error.log'));
     await expressApp(app);
 
     server.listen(PORT, () => {
