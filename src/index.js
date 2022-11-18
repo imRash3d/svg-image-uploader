@@ -1,19 +1,30 @@
+
 const express = require('express');
-const app = express();
-const PORT = 3000;
-const bodyParser = require("body-parser");
-const router = require('./api/routers/file');
-
-
-app.use(bodyParser.json());
-app.use('/api/file', router);
-
-app.listen(PORT, () => {
-    console.log('server running on 3000');
-
-
-});
+const expressApp = require('./api/express-app');
+const logger = require('./api/logger/logger');
 
 
 
 
+
+const StartServer = async () => {
+    const PORT = process.env.PORT || 3000;
+    const app = express();
+    const server = require("http").createServer(app);
+
+    app.use('/api/logs', express.static('app.log'));
+    await expressApp(app);
+
+    server.listen(PORT, () => {
+        console.log("Server running on port " + PORT);
+    })
+        .on('error', (err) => {
+            logger.error(err)
+            process.exit();
+        })
+}
+
+
+
+
+StartServer();

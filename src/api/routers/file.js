@@ -9,7 +9,7 @@ const fileController = require('../controller/file');
 
 
 
-router.get('/', fileController.getFile);
+router.post('/small-svg', fileController.getSmallChartImageBuffer);
 
 
 

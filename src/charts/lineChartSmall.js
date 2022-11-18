@@ -1,7 +1,7 @@
 
 
 const D3Node = require('d3-node');
-const { historicalData } = require('../api/data');
+
 const svg2png = require('svg-png-converter').svg2png;
 const d3n = new D3Node();
 const d3 = d3n.d3
@@ -22,10 +22,10 @@ var y0;
 
 
 
-const LineChartSmall = async (options, data) => {
+const LineChartSmall = async (data) => {
 
 
-    const _data = historicalData[0].Historical.map(y => {
+    const _data = data.Historical.map(y => {
 
         return {
             date: new Date(y.Date),
@@ -57,26 +57,18 @@ const LineChartSmall = async (options, data) => {
 
 
 
-
-
     configureXaxis(_data);
     configureYaxis(_data);
     drawGridlines();
     drawLinePath(_data);
 
+    return await svg2png({
+        input: body.node().innerHTML,
+        encoding: 'buffer',
+        format: 'png',
+    })
 
 
-    //  const fs = require('fs');
-    // fs.writeFileSync("test.svg", body.node().innerHTML)
-    // const svgText = body.node().innerHTML;
-    // console.log(body.node().innerHTML);
-
-    return body.node().innerHTML;
-    // return await svg2png({
-    //     input: body.node().innerHTML,
-    //     encoding: 'dataURL'
-
-    // })
 
 }
 
