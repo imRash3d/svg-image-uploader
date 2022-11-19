@@ -11,8 +11,8 @@ const { JSDOM } = jsdom;
 
 // global variable 
 const colorCode = '#CC0000';
-var width = 300;
-var height = 150;
+var width = 1200;
+var height = 500;
 var x;
 var y;
 var svg;
@@ -22,14 +22,14 @@ var y0;
 
 
 
-const LineChartSmall = async (data) => {
+const LineChart = async (data) => {
 
 
     const _data = data.Historical.map(y => {
 
         return {
             date: new Date(y.Date),
-            value: Number(y.Close),
+            value: Number(Math.round(y.Close)),
             Open: Number(y.Open),
             Close: Number(y.Close),
         };
@@ -53,7 +53,9 @@ const LineChartSmall = async (data) => {
         .style('background-color', 'white')
         .attr("width", width)
         .attr("height", height)
-        .append('g');
+        .append('g')
+        .attr('transform', 'translate(' + 50 + ',' + 50 + ')');
+        ;
 
 
 
@@ -66,6 +68,7 @@ const LineChartSmall = async (data) => {
         input: body.node().innerHTML,
         encoding: 'buffer',
         format: 'png',
+        quality:1
     })
 
 
@@ -106,7 +109,7 @@ function configureYaxis(_data) {
 
     y0 = d3
         .scaleLinear()
-        .range([height, 0])
+        .range([height-100, 0])
         .domain(yRange);
 
     const _yXxis0 = d3.axisLeft(y0).ticks(10).tickFormat(d3.format('.1f'));
@@ -134,17 +137,16 @@ function configureYaxis(_data) {
 }
 
 function configureXaxis(data) {
-
     // range of data configuring, in this case we are
     // showing data over a period of time
-    x = d3.scaleLinear()
+    x = d3.scaleTime()
         .range([0, width])
         .domain(d3.extent(data, d => d.date));
 
     // Add the X-axis definition to the bottom of the chart
     svg
         .append('g')
-        .attr('transform', 'translate(0,' + (height) + ')')
+        .attr('transform', 'translate(0,' + (height-100) + ')')
         .call(d3.axisBottom(x))
         .select('.domain')
         .attr('stroke', '#000')
@@ -188,6 +190,6 @@ function drawGridlines() {
 
 
 module.exports = {
-    LineChartSmall
+    LineChart
 
 };
