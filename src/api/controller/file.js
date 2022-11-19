@@ -6,14 +6,19 @@ const { sendError } = require('../utility/utils');
 
 
 const getSmallChartImageBuffer = async (req, res) => {
+    executeHttpCall(req, res, 'small')
+};
+
+const executeHttpCall = async (req, res, type) => {
+
 
     try {
-        // console.log(req.body)
+
         if (!req.body.Historical) {
             sendError(res, { msg: "Historical data not found" });
             return;
         }
-        const imageBuffer = await LineChartSmall(req.body);
+        const imageBuffer = type == 'small' ? await LineChartSmall(req.body) : await LineChart(req.body);
 
 
         const used = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -22,36 +27,16 @@ const getSmallChartImageBuffer = async (req, res) => {
         res.send(imageBuffer)
     }
     catch (err) {
-        console.log(err)
-        //  sendError(res, { msg: err });
+
+        sendError(res, { msg: err });
     }
 
-
-};
+}
 
 
 
 const getChartImageBuffer = async (req, res) => {
-
-    try {
-        // console.log(req.body)
-        if (!req.body.Historical) {
-            sendError(res, { msg: "Historical data not found" });
-            return;
-        }
-        const imageBuffer = await LineChart(req.body);
-
-        const used = process.memoryUsage().heapUsed / 1024 / 1024;
-        logger.info(`Stock Symbol ${req.body.Symbol} uses approximately ${Math.round(used * 100) / 100} MB`);
-
-        res.send(imageBuffer)
-    }
-    catch (err) {
-        console.log(err)
-        //  sendError(res, { msg: err });
-    }
-
-
+    executeHttpCall(req, res, 'large')
 };
 
 

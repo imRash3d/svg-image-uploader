@@ -62,16 +62,19 @@ const LineChartSmall = async (data) => {
     drawGridlines();
     drawLinePath(_data);
 
+
     return await svg2png({
-        input: body.node().innerHTML,
-        encoding: 'buffer',
+        input: body.node().innerHTML.trim(),
+        encoding: 'dataURL',
         format: 'png',
-        quality:1
+        quality: 1
     })
 
 
-
 }
+
+
+
 
 
 function drawLinePath(_data) {

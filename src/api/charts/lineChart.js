@@ -7,12 +7,15 @@ const d3n = new D3Node();
 const d3 = d3n.d3
 jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-
-
+const margin = { top: 30, right: 100, bottom: 50, left: 50 };
+const canvasSize = {
+    width: 1200,
+    height: 550
+};
 // global variable 
 const colorCode = '#CC0000';
-var width = 1200;
-var height = 500;
+var width;
+var height;
 var x;
 var y;
 var svg;
@@ -23,13 +26,14 @@ var y0;
 
 
 const LineChart = async (data) => {
-
+    width = canvasSize.width - margin.left - margin.right;
+    height = canvasSize.height - margin.top - margin.bottom;
 
     const _data = data.Historical.map(y => {
 
         return {
             date: new Date(y.Date),
-            value: Number(Math.round(y.Close)),
+            value: Number(y.Close),
             Open: Number(y.Open),
             Close: Number(y.Close),
         };
@@ -51,11 +55,11 @@ const LineChart = async (data) => {
 
     svg = body.append("svg")  // create svg with canvas height width 
         .style('background-color', 'white')
-        .attr("width", width)
+        .attr("width", width + 100)
         .attr("height", height)
         .append('g')
-        .attr('transform', 'translate(' + 50 + ',' + 50 + ')');
-        ;
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    ;
 
 
 
@@ -64,11 +68,12 @@ const LineChart = async (data) => {
     drawGridlines();
     drawLinePath(_data);
 
+
     return await svg2png({
-        input: body.node().innerHTML,
-        encoding: 'buffer',
+        input: body.node().innerHTML.trim(),
+        encoding: 'dataURL',
         format: 'png',
-        quality:1
+        quality: 1
     })
 
 
@@ -89,7 +94,6 @@ function drawLinePath(_data) {
         .attr('stroke-width', 1)
         .attr('fill', 'none')
         .attr('d', valueLine);
-    valueLine.curve(d3.curveCardinal);
 }
 
 
@@ -98,6 +102,7 @@ function configureYaxis(_data) {
     // range of data configuring
 
     let yRange = d3.extent(_data, d => d.value);
+    console.log(yRange)
     // If we have data then make the Y range one less than the
     // smallest value so we have space between the bottom-most part
     // of the line and the X-axis
@@ -109,7 +114,7 @@ function configureYaxis(_data) {
 
     y0 = d3
         .scaleLinear()
-        .range([height-100, 0])
+        .range([height - 100, 0])
         .domain(yRange);
 
     const _yXxis0 = d3.axisLeft(y0).ticks(10).tickFormat(d3.format('.1f'));
@@ -146,7 +151,7 @@ function configureXaxis(data) {
     // Add the X-axis definition to the bottom of the chart
     svg
         .append('g')
-        .attr('transform', 'translate(0,' + (height-100) + ')')
+        .attr('transform', 'translate(0,' + (height - 100) + ')')
         .call(d3.axisBottom(x))
         .select('.domain')
         .attr('stroke', '#000')
